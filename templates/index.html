@@ -1,15 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>WhatsApp Automation</title>
+    <meta charset="UTF-8">
+    <title>Main Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-  <h1>Upload Excel File for WhatsApp Automation</h1>
-  <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
-    <label for="file">Select Excel File:</label>
-    <input type="file" id="file" name="file"><br><br>
-    <input type="submit" value="Upload and Start">
-  </form>
+    <h1>Welcome to the Automation Tools</h1>
+    <ul>
+        <li><a href="{{ url_for('whatsapp_sender') }}">WhatsApp Sender</a></li>
+        <li><a href="{{ url_for('xls_to_csv') }}">XLS to CSV Converter</a></li>
+        <li><a href="{{ url_for('sms_processor') }}">SMS Processor</a></li>
+    </ul>
 </body>
 </html>

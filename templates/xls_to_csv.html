@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XLS to CSV Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>XLS to CSV Converter</h1>
+    <form method="post" enctype="multipart/form-data">
+        <label for="file">Select Excel File:</label>
+        <input type="file" name="file" required>
+        <label for="output_dir">Output Directory:</label>
+        <input type="text" name="output_dir" required>
+        <button type="submit">Convert</button>
+    </form>
+    <a href="{{ url_for('index') }}">Back to Main Menu</a>
+</body>
+</html>
