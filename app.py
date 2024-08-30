@@ -227,11 +227,7 @@ def process_sms(source_path, file_name):
         chunks = split_message(str(message), max_chunk_length)
         chunks += ["  "] * (4 - len(chunks))
         for i in range(4):
-            output_df.loc[index, split_columns[i]] = chunks[i] if i < lencompleting the previous code:
-
-```python
-    (chunks) else "  "
-
+            output_df.loc[index, split_columns[i]] = chunks[i] if i < len(chunks) else "  "
     final_valid_df, final_invalid_df = validate_data(output_df)
     all_invalid_df = pd.concat([invalid_df, final_invalid_df])
     final_valid_df = fill_empty_with_spaces(final_valid_df)
