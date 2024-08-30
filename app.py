@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 import os
 import threading
 import openpyxl
 import re
 import pyperclip
+import pandas as pd
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -12,7 +13,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import time
-import pandas as pd
 
 app = Flask(__name__)
 
@@ -41,18 +41,22 @@ def whatsapp_sender():
     return render_template('whatsapp_sender.html')
 
 def start_whatsapp_automation(filepath, language):
+    # Ensure WebDriver uses the VNC display
+    os.environ["DISPLAY"] = ":1"  # Or the display number your VNC server is using
+
+    # Set Chrome options
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    # Remove headless mode to allow browser window to be visible
+    # chrome_options.add_argument("--headless")  # Ensure this is commented out or removed
 
+    # Start Chrome WebDriver
     service = Service("/usr/local/bin/chromedriver")
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
+    # Open WhatsApp Web
     driver.get("https://web.whatsapp.com/")
-    wait = WebDriverWait(driver, 60)
-
-    # Wait for WhatsApp to load
-    wait.until(EC.presence_of_element_located((By.XPATH, "//canvas[@aria-label='Scan me!']")))
 
     wb = openpyxl.load_workbook(filepath)
     sheet = wb.active
@@ -81,8 +85,8 @@ def start_whatsapp_automation(filepath, language):
             }[language]
 
             # Wait for the message box to be available
-            message_box = wait.until(EC.presence_of_element_located((By.XPATH, message_box_xpath)))
-            
+            message_box = WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.XPATH, message_box_xpath)))
+
             # Clean the message
             cleaned_message = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]', '', message)
             pyperclip.copy(cleaned_message)
@@ -101,7 +105,7 @@ def start_whatsapp_automation(filepath, language):
             status = "Unknown"
             for icon, state in icons:
                 try:
-                    wait.until(EC.presence_of_element_located((By.XPATH, icon)))
+                    WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, icon)))
                     status = state
                     break
                 except:
@@ -223,7 +227,10 @@ def process_sms(source_path, file_name):
         chunks = split_message(str(message), max_chunk_length)
         chunks += ["  "] * (4 - len(chunks))
         for i in range(4):
-            output_df.loc[index, split_columns[i]] = chunks[i] if i < len(chunks) else "  "
+            output_df.loc[index, split_columns[i]] = chunks[i] if i < lencompleting the previous code:
+
+```python
+    (chunks) else "  "
 
     final_valid_df, final_invalid_df = validate_data(output_df)
     all_invalid_df = pd.concat([invalid_df, final_invalid_df])
@@ -263,7 +270,7 @@ def validate_data(df):
     for index, row in valid_rows.iterrows():
         if any(len(str(cell)) > 30 for cell in row):
             invalid_rows = pd.concat([invalid_rows, pd.DataFrame([row], columns=row.index)], ignore_index=True)
-            valid_rows = valid_rows drop(index)
+            valid_rows = valid_rows.drop(index)
 
     return valid_rows, invalid_rows
 
